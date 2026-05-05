@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import process from 'node:process';
+import { fileURLToPath } from 'node:url';
 
 import { getConfig } from './config.js';
 import { buildGenerationPayload, generateWithProvider, normalizeProvider, PROVIDERS } from './generation.js';
@@ -142,7 +143,12 @@ export async function runCliCommand(argv = process.argv.slice(2)) {
   return undefined;
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+function isMainModule() {
+  if (!process.argv[1]) return false;
+  return fs.realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
+}
+
+if (isMainModule()) {
   try {
     const code = await runCliCommand();
     if (code === undefined) {
