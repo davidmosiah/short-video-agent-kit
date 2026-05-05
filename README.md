@@ -1,9 +1,13 @@
 # Short Video Agent Kit
 
 [![npm version](https://img.shields.io/npm/v/short-video-agent-kit.svg)](https://www.npmjs.com/package/short-video-agent-kit)
+[![npm downloads](https://img.shields.io/npm/dm/short-video-agent-kit.svg)](https://www.npmjs.com/package/short-video-agent-kit)
 [![CI](https://github.com/davidmosiah/short-video-agent-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/davidmosiah/short-video-agent-kit/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Provider-neutral short-form AI video toolkit for agents. It gives Codex, Claude, Cursor, Hermes, OpenClaw and other MCP clients one interface for building dry-run payloads and, when explicitly enabled, generating vertical video through Sora/OpenAI, Gemini Veo, xAI/Grok and Seedance/PiAPI-style providers.
+
+Use it when an agent needs one safe interface for prompt-to-video payload validation and optional paid generation across multiple providers.
 
 ## Why It Is Agent-First
 
@@ -24,7 +28,7 @@ npm install -g short-video-agent-kit
 Or run directly:
 
 ```bash
-npx -y short-video-agent-kit doctor
+npm exec --yes --package=short-video-agent-kit -- short-video-agent-kit doctor
 ```
 
 ## CLI
@@ -74,6 +78,23 @@ Recommended first calls:
 2. `short_video_privacy_audit`
 3. `short_video_build_payload`
 4. `short_video_generate`
+
+## Agent Surfaces
+
+| Tool | Purpose |
+|---|---|
+| `short_video_agent_manifest` | Install/runtime guidance for Codex, Claude, Cursor, Hermes and OpenClaw |
+| `short_video_connection_status` | Provider readiness without API keys |
+| `short_video_privacy_audit` | Prompt, output and reference-asset boundaries |
+| `short_video_build_payload` | Provider-specific payload without paid generation |
+| `short_video_generate` | Dry-run by default, live only when explicitly requested |
+
+## Copy-Paste Agent Prompt
+
+```text
+Use short-video-agent-kit. First call short_video_connection_status and short_video_privacy_audit.
+Build the payload before generation. Only set live=true if I explicitly confirm a paid provider call.
+```
 
 ## Configuration
 

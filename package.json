@@ -1,7 +1,7 @@
 {
   "name": "short-video-agent-kit",
-  "version": "0.1.1",
-  "description": "Provider-neutral vertical AI video generation CLI and MCP helper for agents.",
+  "version": "0.1.2",
+  "description": "Agent-first short-form AI video generation CLI and MCP server for Sora, Gemini Veo, xAI/Grok and Seedance/PiAPI.",
   "type": "module",
   "bin": {
     "short-video-agent-kit": "src/cli.js",
@@ -19,12 +19,17 @@
     "ai-agents",
     "mcp",
     "model-context-protocol",
+    "mcp-server",
+    "agent-tools",
+    "agentic-workflows",
     "sora",
     "veo",
     "gemini",
     "xai",
     "seedance",
-    "video-generation"
+    "video-generation",
+    "creator-tools",
+    "local-first"
   ],
   "author": "David Mosiah",
   "license": "MIT",
@@ -44,6 +49,8 @@
   },
   "files": [
     "src",
+    "examples",
+    "llms.txt",
     "README.md",
     "LICENSE",
     ".env.example"

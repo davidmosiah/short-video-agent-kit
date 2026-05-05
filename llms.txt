@@ -1,0 +1,20 @@
+# Short Video Agent Kit
+
+Agent-first short-form AI video generation CLI and MCP server for Sora, Gemini Veo, xAI/Grok and Seedance/PiAPI.
+
+Repository: https://github.com/davidmosiah/short-video-agent-kit
+NPM: https://www.npmjs.com/package/short-video-agent-kit
+Primary command: npm exec --yes --package=short-video-agent-kit -- short-video-agent-kit doctor
+MCP command: short-video-mcp
+
+Core tools:
+- short_video_agent_manifest
+- short_video_connection_status
+- short_video_privacy_audit
+- short_video_build_payload
+- short_video_generate
+
+Safety:
+- Dry-run is enabled by default.
+- API keys are never returned to agents.
+- Paid generation requires live=true or SHORT_VIDEO_DRY_RUN=false.

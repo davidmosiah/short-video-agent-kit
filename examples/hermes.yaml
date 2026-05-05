@@ -1,0 +1,6 @@
+mcp_servers:
+  short_video:
+    command: npx
+    args: ["-y", "short-video-agent-kit"]
+    sampling:
+      enabled: false
