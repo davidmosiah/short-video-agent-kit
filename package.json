@@ -1,0 +1,59 @@
+{
+  "name": "short-video-agent-kit",
+  "version": "0.1.0",
+  "description": "Provider-neutral vertical AI video generation CLI and MCP helper for agents.",
+  "type": "module",
+  "bin": {
+    "short-video-agent-kit": "src/cli.js",
+    "short-video-mcp": "src/index.js"
+  },
+  "scripts": {
+    "check": "find src test -name '*.js' -print0 | xargs -0 -n1 node --check",
+    "test": "node --test",
+    "doctor": "node src/cli.js doctor",
+    "manifest": "node src/cli.js manifest",
+    "privacy": "node src/cli.js privacy-audit",
+    "start": "node src/index.js"
+  },
+  "keywords": [
+    "ai-agents",
+    "mcp",
+    "model-context-protocol",
+    "sora",
+    "veo",
+    "gemini",
+    "xai",
+    "seedance",
+    "video-generation"
+  ],
+  "author": "David Mosiah",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.21.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "zod": "^4.4.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.6.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE",
+    ".env.example"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidmosiah/short-video-agent-kit.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davidmosiah/short-video-agent-kit/issues"
+  },
+  "homepage": "https://github.com/davidmosiah/short-video-agent-kit"
+}
