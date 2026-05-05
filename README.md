@@ -1,5 +1,8 @@
 # Short Video Agent Kit
 
+[![npm version](https://img.shields.io/npm/v/short-video-agent-kit.svg)](https://www.npmjs.com/package/short-video-agent-kit)
+[![CI](https://github.com/davidmosiah/short-video-agent-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/davidmosiah/short-video-agent-kit/actions/workflows/ci.yml)
+
 Provider-neutral short-form AI video toolkit for agents. It gives Codex, Claude, Cursor, Hermes, OpenClaw and other MCP clients one interface for building dry-run payloads and, when explicitly enabled, generating vertical video through Sora/OpenAI, Gemini Veo, xAI/Grok and Seedance/PiAPI-style providers.
 
 ## Why It Is Agent-First
