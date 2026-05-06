@@ -2,8 +2,12 @@
 
 [![npm version](https://img.shields.io/npm/v/short-video-agent-kit.svg)](https://www.npmjs.com/package/short-video-agent-kit)
 [![npm downloads](https://img.shields.io/npm/dm/short-video-agent-kit.svg)](https://www.npmjs.com/package/short-video-agent-kit)
+[![GitHub stars](https://img.shields.io/github/stars/davidmosiah/short-video-agent-kit?style=flat-square&logo=github)](https://github.com/davidmosiah/short-video-agent-kit/stargazers)
 [![CI](https://github.com/davidmosiah/short-video-agent-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/davidmosiah/short-video-agent-kit/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Agent-first](https://img.shields.io/badge/agent--first-MCP-0ea5a3?style=flat-square)](https://github.com/davidmosiah/short-video-agent-kit)
+
+> If this agent-first tool helps your workflow, please star the repo. Stars make this agent-first tooling easier for other builders to discover and help Delx keep shipping open infrastructure.
 
 Provider-neutral short-form AI video toolkit for agents. It gives Codex, Claude, Cursor, Hermes, OpenClaw and other MCP clients one interface for building dry-run payloads and, when explicitly enabled, generating vertical video through Sora/OpenAI, Gemini Veo, xAI/Grok and Seedance/PiAPI-style providers.
 
