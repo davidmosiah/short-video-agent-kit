@@ -1,20 +1,42 @@
 # Short Video Agent Kit
 
-Agent-first short-form AI video generation CLI and MCP server for Sora, Gemini Veo, xAI/Grok and Seedance/PiAPI.
+Agent-first short-form AI video generation CLI and MCP server. One unified interface for OpenAI Sora, Google Gemini Veo, xAI Grok, and Seedance/PiAPI.
 
 Repository: https://github.com/davidmosiah/short-video-agent-kit
 NPM: https://www.npmjs.com/package/short-video-agent-kit
+Docs: https://github.com/davidmosiah/short-video-agent-kit#readme
 Primary command: npm exec --yes --package=short-video-agent-kit -- short-video-agent-kit doctor
 MCP command: short-video-mcp
 
 Core tools:
-- short_video_agent_manifest
-- short_video_connection_status
-- short_video_privacy_audit
-- short_video_build_payload
-- short_video_generate
+- short_video_agent_manifest — runtime contract, tool list, supported clients
+- short_video_connection_status — provider availability, API keys present, dry-run mode
+- short_video_capabilities — per-provider feature matrix (resolution, duration, audio)
+- short_video_privacy_audit — what is logged locally vs sent to providers
+- short_video_build_payload — turn a natural-language brief into a provider-ready request
+- short_video_generate — submit a generation job to the chosen provider
+- short_video_list_jobs — list recent generation jobs and their status
+- short_video_get_job — fetch a single job (poll until done, get download URL)
+
+Provider env vars (set the ones you have, others are skipped):
+- OPENAI_API_KEY — for Sora
+- GOOGLE_API_KEY — for Gemini Veo
+- XAI_API_KEY — for xAI Grok video
+- PIAPI_API_KEY — for Seedance via PiAPI
+- SHORT_VIDEO_DRY_RUN=true — default; set to false (or pass live=true) to spend credits
+- SHORT_VIDEO_DEFAULT_PROVIDER — sora|veo|grok|seedance, optional
+
+Workflow for agents:
+1. Call short_video_connection_status to see which providers are available.
+2. Use short_video_capabilities to pick the right provider for the request (duration, resolution, audio).
+3. Build the payload with short_video_build_payload (deterministic, no LLM call).
+4. Confirm the brief + estimated cost with the user.
+5. Call short_video_generate with explicit live=true to actually spend credits.
+6. Poll short_video_get_job until the video URL is ready.
 
 Safety:
-- Dry-run is enabled by default.
-- API keys are never returned to agents.
-- Paid generation requires live=true or SHORT_VIDEO_DRY_RUN=false.
+- API keys stored locally, never returned in tool output.
+- Dry-run on by default; paid generation requires live=true or SHORT_VIDEO_DRY_RUN=false.
+- Cost estimates surfaced before submission so agents can warn the user.
+- Generated videos default to containsSyntheticMedia disclosure when posted downstream.
+- Not affiliated with or endorsed by OpenAI, Google, xAI, or PiAPI.
