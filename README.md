@@ -140,3 +140,13 @@ npm install
 npm test
 npm run check
 ```
+
+---
+
+## 📧 Contact & Support
+
+- 📨 **support@delx.ai** — general questions, integration help, partnerships
+- 🐛 **Bug reports / feature requests** — [GitHub Issues](https://github.com/davidmosiah/short-video-agent-kit/issues)
+- 🐦 **Updates** — [@delx369](https://x.com/delx369) on X
+- 🌐 **Site** — [wellness.delx.ai](https://wellness.delx.ai)
+
