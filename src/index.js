@@ -13,7 +13,7 @@ import { makeError, makeResponse, toMarkdown } from './mcp-utils.js';
 import { buildAgentManifest, buildConnectionStatus, buildPrivacyAudit, formatMarkdown } from './services/agent-surfaces.js';
 
 const SERVER_NAME = 'short-video-agent-kit';
-const SERVER_VERSION = '0.1.0';
+const SERVER_VERSION = "0.1.6";
 const ResponseFormatSchema = z.enum(['json', 'markdown']).default('json');
 const ProviderSchema = z.enum(PROVIDERS);
 
