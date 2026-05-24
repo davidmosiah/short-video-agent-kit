@@ -15,7 +15,8 @@
     "manifest": "node src/cli.js manifest",
     "privacy": "node src/cli.js privacy-audit",
     "start": "node src/index.js",
-    "test:metadata": "node scripts/metadata-check.mjs"
+    "test:metadata": "node scripts/metadata-check.mjs",
+    "prepublishOnly": "npm test"
   },
   "keywords": [
     "ai-agents",
@@ -72,5 +73,8 @@
     "hono": "4.12.22",
     "fast-uri": "3.1.2",
     "ip-address": "10.2.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
