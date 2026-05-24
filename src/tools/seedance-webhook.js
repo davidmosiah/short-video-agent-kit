@@ -13,7 +13,14 @@ function arg(name, fallback = '') {
 
 function sendJson(res, status, payload) {
   res.writeHead(status, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(payload));
+  res.end(JSON.stringify(safeResponsePayload(payload)));
+}
+
+function safeResponsePayload(payload) {
+  if (!payload || typeof payload !== 'object') return payload;
+  const safe = { ...payload };
+  if ('error' in safe) safe.error = String(safe.error).includes('\n') ? 'internal_error' : String(safe.error);
+  return safe;
 }
 
 async function readJsonBody(req) {
