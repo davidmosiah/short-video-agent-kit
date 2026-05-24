@@ -11,21 +11,26 @@ function arg(name, fallback = '') {
   return i > -1 ? process.argv[i + 1] : fallback;
 }
 
-function sendJson(res, status, payload) {
+function sendJsonText(res, status, body) {
   res.writeHead(status, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify(safeResponsePayload(payload)));
+  res.end(body);
 }
 
-function safeResponsePayload(payload) {
-  if (!payload || typeof payload !== 'object') return payload;
-  const safe = { ok: Boolean(payload.ok) };
-  if ('taskId' in payload) safe.taskId = String(payload.taskId);
-  if ('status' in payload) safe.status = String(payload.status);
-  if ('videoUrl' in payload) safe.videoUrl = String(payload.videoUrl);
-  if ('downloadedTo' in payload) safe.downloadedTo = payload.downloadedTo ? String(payload.downloadedTo) : null;
-  if ('downloadError' in payload) safe.downloadError = payload.downloadError ? 'download_failed' : null;
-  if ('error' in payload) safe.error = String(payload.error).includes('\n') ? 'internal_error' : String(payload.error);
-  return safe;
+function sendBasicJson(res, status, ok, error = '') {
+  const payload = error ? { ok, error } : { ok };
+  return sendJsonText(res, status, JSON.stringify(payload));
+}
+
+function sendTaskAcceptedJson(res, { taskId, status, videoUrl, downloadedTo, downloadError }) {
+  const payload = {
+    ok: true,
+    taskId: String(taskId),
+    status: String(status),
+    videoUrl: videoUrl ? String(videoUrl) : '',
+    downloadedTo: downloadedTo ? String(downloadedTo) : null,
+    downloadError: downloadError ? 'download_failed' : null
+  };
+  return sendJsonText(res, 200, JSON.stringify(payload));
 }
 
 async function readJsonBody(req) {
@@ -179,13 +184,13 @@ export function createSeedanceWebhookHandler({
   return async function handler(req, res) {
     const url = new URL(req.url || '/', 'http://localhost');
     if (req.method === 'GET' && url.pathname === '/health') {
-      return sendJson(res, 200, { ok: true });
+      return sendBasicJson(res, 200, true);
     }
     if (req.method !== 'POST' || url.pathname !== routePath) {
-      return sendJson(res, 404, { ok: false, error: 'not_found' });
+      return sendBasicJson(res, 404, false, 'not_found');
     }
     if (!verifySecret(req, secret)) {
-      return sendJson(res, 401, { ok: false, error: 'unauthorized' });
+      return sendBasicJson(res, 401, false, 'unauthorized');
     }
 
     try {
@@ -252,8 +257,7 @@ export function createSeedanceWebhookHandler({
         }
       }
 
-      return sendJson(res, 200, {
-        ok: true,
+      return sendTaskAcceptedJson(res, {
         taskId: info.taskId,
         status: info.status,
         videoUrl,
@@ -261,7 +265,7 @@ export function createSeedanceWebhookHandler({
         downloadError
       });
     } catch (error) {
-      return sendJson(res, 500, { ok: false, error: 'internal_error' });
+      return sendBasicJson(res, 500, false, 'internal_error');
     }
   };
 }
