@@ -106,7 +106,7 @@ test('webhook handler acknowledges even when download fails', async () => {
   const body = JSON.parse(res.body);
   assert.equal(body.ok, true);
   assert.equal(body.taskId, 'task-err');
-  assert.match(body.downloadError, /boom/);
+  assert.equal(body.downloadError, 'download_failed');
   assert.equal(fs.existsSync(path.join(outputDir, 'task-err', 'download-error.txt')), true);
 });
 

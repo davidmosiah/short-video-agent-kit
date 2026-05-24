@@ -18,8 +18,13 @@ function sendJson(res, status, payload) {
 
 function safeResponsePayload(payload) {
   if (!payload || typeof payload !== 'object') return payload;
-  const safe = { ...payload };
-  if ('error' in safe) safe.error = String(safe.error).includes('\n') ? 'internal_error' : String(safe.error);
+  const safe = { ok: Boolean(payload.ok) };
+  if ('taskId' in payload) safe.taskId = String(payload.taskId);
+  if ('status' in payload) safe.status = String(payload.status);
+  if ('videoUrl' in payload) safe.videoUrl = String(payload.videoUrl);
+  if ('downloadedTo' in payload) safe.downloadedTo = payload.downloadedTo ? String(payload.downloadedTo) : null;
+  if ('downloadError' in payload) safe.downloadError = payload.downloadError ? 'download_failed' : null;
+  if ('error' in payload) safe.error = String(payload.error).includes('\n') ? 'internal_error' : String(payload.error);
   return safe;
 }
 
