@@ -249,7 +249,7 @@ export function createSeedanceWebhookHandler({
         downloadError
       });
     } catch (error) {
-      return sendJson(res, 500, { ok: false, error: String(error) });
+      return sendJson(res, 500, { ok: false, error: 'internal_error' });
     }
   };
 }
