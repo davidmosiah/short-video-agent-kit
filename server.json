@@ -3,7 +3,7 @@
   "name": "io.github.davidmosiah/short-video-agent-kit",
   "version": "0.1.6",
   "title": "Short Video Agent Kit",
-  "description": "Provider-neutral short-form AI video toolkit for agents. Builds dry-run payloads and optional live vertical video generation flows for Sora/OpenAI, Gemini Veo, xAI/Grok and Seedance-style providers.",
+  "description": "Provider-neutral short-form AI video toolkit for agents: Sora, Gemini Veo, xAI/Grok, Seedance.",
   "websiteUrl": "https://github.com/davidmosiah/short-video-agent-kit",
   "repository": {
     "url": "https://github.com/davidmosiah/short-video-agent-kit",
