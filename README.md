@@ -56,6 +56,86 @@ Or run directly:
 npm exec --yes --package=short-video-agent-kit -- short-video-agent-kit doctor
 ```
 
+## Quickstart
+
+No API key needed to try it — generation is dry-run by default, so the kit returns the exact provider-neutral plan it *would* send without spending a credit.
+
+Build a Sora plan for an 8-second vertical teaser:
+
+```bash
+short-video-agent-kit generate \
+  --provider openai_sora \
+  --prompt "Vertical 8-second product teaser for a minimalist water bottle, soft studio light, slow dolly-in" \
+  --output ./output/teaser.mp4
+```
+
+Real output (no provider call, no credits spent):
+
+```json
+{
+  "ok": true,
+  "dry_run": true,
+  "next_step": "Pass --live or set SHORT_VIDEO_DRY_RUN=false to call the provider API.",
+  "provider": "openai_sora",
+  "endpoint": "POST /v1/videos",
+  "payload": {
+    "model": "sora-2",
+    "prompt": "Vertical 8-second product teaser for a minimalist water bottle, soft studio light, slow dolly-in",
+    "seconds": "8",
+    "size": "720x1280"
+  }
+}
+```
+
+Same prompt, different provider — the plan re-targets the endpoint and parameter shape for you. `payload` returns just the plan (no `dry_run` wrapper):
+
+```bash
+short-video-agent-kit payload --provider gemini_veo --prompt "Same teaser, 9:16, cinematic"
+```
+
+```json
+{
+  "provider": "gemini_veo",
+  "endpoint": "POST /models/{model}:predictLongRunning",
+  "payload": {
+    "instances": [
+      {
+        "prompt": "Same teaser, 9:16, cinematic"
+      }
+    ],
+    "parameters": {
+      "aspectRatio": "9:16",
+      "durationSeconds": 8
+    }
+  }
+}
+```
+
+Check which providers are wired up (keys are detected, never printed):
+
+```bash
+short-video-agent-kit doctor
+```
+
+```json
+{
+  "ok": false,
+  "dry_run": true,
+  "providers": {
+    "openai_sora": { "configured": false, "env_keys": ["OPENAI_API_KEY"], "models": ["sora-2"] },
+    "gemini_veo": { "configured": false, "env_keys": ["GEMINI_API_KEY", "GOOGLE_API_KEY"], "models": ["veo-3.1-fast-generate-preview"] },
+    "xai_grok": { "configured": false, "env_keys": ["XAI_API_KEY"], "models": ["grok-imagine-video", "grok-imagine-image"] },
+    "seedance_piapi": { "configured": false, "env_keys": ["PIAPI_KEY", "SEEDANCE_API_KEY"], "models": ["seedance-2-fast-preview"] }
+  },
+  "output_dir": "./output",
+  "next_steps": [
+    "Set one provider key: OPENAI_API_KEY, GEMINI_API_KEY, XAI_API_KEY or PIAPI_KEY."
+  ]
+}
+```
+
+When you are ready to actually render, set a provider key and re-run `generate` with `--live` (or `SHORT_VIDEO_DRY_RUN=false`).
+
 ## CLI
 
 ```bash

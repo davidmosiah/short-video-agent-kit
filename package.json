@@ -1,6 +1,6 @@
 {
   "name": "short-video-agent-kit",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "mcpName": "io.github.davidmosiah/short-video-agent-kit",
   "description": "Agent-first short-form AI video generation CLI and MCP server for Sora, Gemini Veo, xAI/Grok and Seedance/PiAPI.",
   "type": "module",
