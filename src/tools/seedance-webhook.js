@@ -43,8 +43,13 @@ async function readJsonBody(req) {
   };
 }
 
-function verifySecret(req, expectedSecret) {
-  if (!expectedSecret) return true;
+function verifySecret(req, expectedSecret, { allowInsecure = false, host = '127.0.0.1' } = {}) {
+  // Fail-closed: non-loopback listeners MUST have a secret unless explicitly overridden.
+  const loopback = host === '127.0.0.1' || host === '::1' || host === 'localhost';
+  if (!expectedSecret) {
+    if (allowInsecure && loopback) return true;
+    return false;
+  }
   const candidates = [
     req.headers['x-webhook-secret'],
     req.headers['x-piapi-secret'],
@@ -177,6 +182,8 @@ export function createSeedanceWebhookHandler({
   downloadDir = '',
   secret = '',
   routePath = '/seedance-webhook',
+  host = '127.0.0.1',
+  allowInsecure = false,
   download = downloadFile,
   notify = null,
   onTaskEvent = null
@@ -189,7 +196,7 @@ export function createSeedanceWebhookHandler({
     if (req.method !== 'POST' || url.pathname !== routePath) {
       return sendBasicJson(res, 404, false, 'not_found');
     }
-    if (!verifySecret(req, secret)) {
+    if (!verifySecret(req, secret, { allowInsecure, host })) {
       return sendBasicJson(res, 401, false, 'unauthorized');
     }
 
@@ -273,14 +280,14 @@ export function createSeedanceWebhookHandler({
 async function main() {
   const command = process.argv[2];
   if (command !== 'serve') {
-    console.error('Usage: node src/tools/seedance-webhook.js serve --listen http://0.0.0.0:8791 --output-dir <DIR> [--download-dir <DIR>] [--secret <SECRET>] [--path /seedance-webhook] [--discord-target delx-alerts] [--env-file /root/.openclaw/secrets.env] [--task-event-script /root/scripts/automation/roblox_tiktok_seedance_async.py]');
+    console.error('Usage: node src/tools/seedance-webhook.js serve --listen http://127.0.0.1:8791 --output-dir <DIR> [--download-dir <DIR>] --secret <SECRET> [--path /seedance-webhook] [--allow-insecure-loopback] [--discord-target <id>] [--env-file <path>] [--task-event-script <path>]');
     process.exit(1);
   }
 
-  const listen = new URL(arg('listen', 'http://0.0.0.0:8791'));
+  const listen = new URL(arg('listen', 'http://127.0.0.1:8791'));
   const outputDir = arg('output-dir', path.join(process.cwd(), 'data', 'seedance-webhooks'));
   const downloadDir = arg('download-dir', '');
-  const secret = arg('secret', '');
+  const secret = arg('secret', process.env.SEEDANCE_WEBHOOK_SECRET || '');
   const routePath = arg('path', '/seedance-webhook');
   const discordTarget = arg('discord-target', '');
   const discordChannel = arg('discord-channel', 'discord');
@@ -289,6 +296,17 @@ async function main() {
   const taskEventScript = arg('task-event-script', '');
   const pythonBin = arg('python-bin', '/usr/bin/python3');
   const taskEventTimeoutMs = Number(arg('task-event-timeout-ms', '300000'));
+  const allowInsecure = process.argv.includes('--allow-insecure-loopback');
+  const host = listen.hostname || '127.0.0.1';
+  const loopback = host === '127.0.0.1' || host === '::1' || host === 'localhost';
+  if (!secret && !loopback) {
+    console.error('Refusing to listen on non-loopback without --secret (or SEEDANCE_WEBHOOK_SECRET).');
+    process.exit(1);
+  }
+  if (!secret && loopback && !allowInsecure) {
+    console.error('Refusing insecure webhook: pass --secret or --allow-insecure-loopback for local-only testing.');
+    process.exit(1);
+  }
 
   fs.mkdirSync(outputDir, { recursive: true });
   if (downloadDir) {
@@ -313,6 +331,8 @@ async function main() {
     downloadDir,
     secret,
     routePath,
+    host,
+    allowInsecure,
     notify,
     onTaskEvent
   }));
