@@ -1,3 +1,4 @@
-# Dry-run default
+# dry-run default
 
-Publish tools default dry-run; live requires explicit intent.
+Default is dry-run. Publish paths are separate and gated.
+Shout dry-run in README; never publish as a silent side effect of demo.
