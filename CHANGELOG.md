@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.10
+
+- Security: fleet pin hygiene — `hono@4.13.1`, `@hono/node-server@2.1.0`, `fast-uri@3.1.5`, `ip-address@10.4.0` (stale security overrides were still vulnerable).
+
+
 
 ## 0.1.9 - 2026-07-30
 

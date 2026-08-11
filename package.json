@@ -1,6 +1,6 @@
 {
   "name": "short-video-agent-kit",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "mcpName": "io.github.davidmosiah/short-video-agent-kit",
   "description": "Agent-first short-form AI video generation CLI and MCP server for Sora, Gemini Veo, xAI/Grok and Seedance/PiAPI.",
   "type": "module",
@@ -70,10 +70,10 @@
   "homepage": "https://github.com/davidmosiah/short-video-agent-kit",
   "overrides": {
     "qs": "6.15.2",
-    "hono": "4.12.32",
-    "fast-uri": "3.1.4",
-    "ip-address": "10.2.0",
-    "@hono/node-server": "2.0.12",
+    "hono": "4.13.1",
+    "fast-uri": "3.1.5",
+    "ip-address": "10.4.0",
+    "@hono/node-server": "2.1.0",
     "body-parser": "2.3.0"
   },
   "publishConfig": {
