@@ -33,9 +33,9 @@
 Default is **stdio**. Optional Streamable HTTP — no session id, JSON responses, loopback only:
 
 ```bash
-npx -y short-video-agent-kit --http
-# GET  http://127.0.0.1:3000/health
-# POST http://127.0.0.1:3000/mcp   (sessionless)
+npx -y -p short-video-agent-kit short-video-mcp --http
+# GET  http://127.0.0.1:3033/health
+# POST http://127.0.0.1:3033/mcp   (sessionless)
 ```
 
 Env: `SHORT_VIDEO_MCP_HOST`, `SHORT_VIDEO_MCP_PORT`, `SHORT_VIDEO_MCP_TRANSPORT=http`.
