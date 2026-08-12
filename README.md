@@ -28,6 +28,19 @@
 
 ---
 
+## HTTP (v2 stateless)
+
+Default is **stdio**. Optional Streamable HTTP — no session id, JSON responses, loopback only:
+
+```bash
+npx -y short-video-agent-kit --http
+# GET  http://127.0.0.1:3000/health
+# POST http://127.0.0.1:3000/mcp   (sessionless)
+```
+
+Env: `SHORT_VIDEO_MCP_HOST`, `SHORT_VIDEO_MCP_PORT`, `SHORT_VIDEO_MCP_TRANSPORT=http`.
+
+
 <!-- /delx header v2 -->
 
 Provider-neutral short-form AI video toolkit for agents. It gives Codex, Claude, Cursor, Hermes, OpenClaw and other MCP clients one interface for building dry-run payloads and, when explicitly enabled, generating vertical video through Sora/OpenAI, Gemini Veo, xAI/Grok and Seedance/PiAPI-style providers.
