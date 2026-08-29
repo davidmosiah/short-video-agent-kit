@@ -1,6 +1,6 @@
 {
   "name": "short-video-agent-kit",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "mcpName": "io.github.davidmosiah/short-video-agent-kit",
   "description": "Agent-first short-form AI video generation CLI and MCP server for Sora, Gemini Veo, xAI/Grok and Seedance/PiAPI.",
   "type": "module",
@@ -10,13 +10,14 @@
   },
   "scripts": {
     "check": "find src test -name '*.js' -print0 | xargs -0 -n1 node --check",
-    "test": "node --test && npm run test:metadata",
+    "test": "node --test && npm run test:metadata && npm run test:skill-surface",
     "doctor": "node src/cli.js doctor",
     "manifest": "node src/cli.js manifest",
     "privacy": "node src/cli.js privacy-audit",
     "start": "node src/index.js",
     "test:metadata": "node scripts/metadata-check.mjs",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "npm test",
+    "test:skill-surface": "node scripts/test-skill-surface.mjs"
   },
   "keywords": [
     "ai-agents",
@@ -57,7 +58,8 @@
     "server.json",
     "README.md",
     "LICENSE",
-    ".env.example"
+    ".env.example",
+    "skill"
   ],
   "repository": {
     "type": "git",

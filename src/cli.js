@@ -7,7 +7,8 @@ import { getConfig } from './config.js';
 import { buildGenerationPayload, generateWithProvider, normalizeProvider, PROVIDERS } from './generation.js';
 import { buildAgentManifest, buildConnectionStatus, buildPrivacyAudit, formatMarkdown } from './services/agent-surfaces.js';
 
-const COMMANDS = new Set(['manifest', 'doctor', 'privacy-audit', 'payload', 'generate', 'help']);
+const COMMANDS = new Set([
+  'call','manifest', 'doctor', 'privacy-audit', 'payload', 'generate', 'help']);
 
 function parseArgs(argv) {
   const args = { _: [] };
@@ -98,6 +99,18 @@ export async function runCliCommand(argv = process.argv.slice(2)) {
 
   const args = parseArgs(argv.slice(1));
   const cfg = getConfig();
+
+  
+  if (command === 'call') {
+    const tool = argv[1];
+    const mapped = {"short_video_agent_manifest": "manifest", "short_video_connection_status": "doctor", "short_video_privacy_audit": "privacy-audit", "short_video_build_payload": "payload", "short_video_generate": "generate"}[tool];
+    if (!mapped) {
+      console.error('Unknown tool: ' + (tool || ''));
+      console.error('Tools: ' + Object.keys({"short_video_agent_manifest": "manifest", "short_video_connection_status": "doctor", "short_video_privacy_audit": "privacy-audit", "short_video_build_payload": "payload", "short_video_generate": "generate"}).join(', '));
+      return 1;
+    }
+    return runCliCommand([mapped, ...argv.slice(2)]);
+  }
 
   if (command === 'help') {
     output(help(), args, 'Short Video Agent Kit');
