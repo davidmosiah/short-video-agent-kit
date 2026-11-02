@@ -69,6 +69,34 @@ test('webhook handler stores payload and returns task metadata', async () => {
   assert.equal(fs.existsSync(path.join(outputDir, 'task-123', 'notify.json')), true);
   assert.equal(notifyPayload.taskId, 'task-123');
   assert.match(notifyPayload.downloadedTo, /task-123\.mp4$/);
+  const savedHeaders = JSON.parse(fs.readFileSync(path.join(outputDir, 'task-123', 'headers.json'), 'utf8'));
+  assert.equal(savedHeaders['content-type'], 'application/json');
+  assert.equal(savedHeaders['x-webhook-secret'], undefined);
+});
+
+test('webhook rejects non-opaque task IDs before any files or downstream calls', async () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'seedance-id-validation-'));
+  try {
+    for (const taskId of ['../escape', '../../escape', '/absolute', '..', '.', 'a/b', 'a\\b', '', 123, {}, 'a'.repeat(129)]) {
+      const outputDir = path.join(root, 'output');
+      let calls = 0;
+      const handler = createSeedanceWebhookHandler({
+        outputDir, downloadDir: path.join(root, 'downloads'), secret: 'synthetic-secret',
+        download: async () => { calls++; }, notify: async () => { calls++; },
+        onTaskEvent: async () => { calls++; }
+      });
+      const req = Object.assign(ReadableFromString(JSON.stringify({ data: {
+        task_id: taskId, output: { video: 'https://example.invalid/video.mp4' }
+      } })), { method: 'POST', url: '/seedance-webhook', headers: { 'x-webhook-secret': 'synthetic-secret' } });
+      const res = createMockResponse();
+      await handler(req, res);
+      assert.equal(res.statusCode, 400);
+      assert.equal(calls, 0);
+      assert.deepEqual(fs.readdirSync(root), []);
+    }
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test('webhook handler acknowledges even when download fails', async () => {
@@ -131,3 +159,4 @@ function createMockResponse() {
     }
   };
 }
+

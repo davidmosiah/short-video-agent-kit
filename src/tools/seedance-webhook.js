@@ -5,6 +5,7 @@ import http from 'node:http';
 import path from 'node:path';
 import process from 'node:process';
 import { spawnSync } from 'node:child_process';
+import { validateTaskId, diagnosticHeaders, downloadWebhookVideo } from './webhook-security.mjs';
 
 function arg(name, fallback = '') {
   const i = process.argv.indexOf(`--${name}`);
@@ -88,8 +89,12 @@ export function extractSeedanceVideoUrl(payload) {
 
 function extractTaskInfo(payload) {
   const data = payload?.data || payload || {};
+  const taskId = data?.task_id ?? payload?.task_id ?? `unknown-${Date.now()}`;
+  // Provider identifiers are opaque names, never filesystem paths. Reject rather
+  // than normalize so different remote IDs cannot collide on the same directory.
+  validateTaskId(taskId);
   return {
-    taskId: data?.task_id || payload?.task_id || `unknown-${Date.now()}`,
+    taskId,
     status: String(data?.status || payload?.status || 'unknown').trim() || 'unknown',
     model: String(data?.model || payload?.model || payload?.task_type || '').trim(),
     taskType: String(data?.task_type || payload?.task_type || '').trim(),
@@ -97,15 +102,6 @@ function extractTaskInfo(payload) {
   };
 }
 
-async function downloadFile(url, outputPath) {
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`Failed to download webhook video ${res.status} from ${url}`);
-  }
-  const buffer = Buffer.from(await res.arrayBuffer());
-  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, buffer);
-}
 
 function createDiscordNotifier({ target = '', channel = 'discord', envFile = '', label = 'Seedance Manual' }) {
   if (!target) {
@@ -184,7 +180,8 @@ export function createSeedanceWebhookHandler({
   routePath = '/seedance-webhook',
   host = '127.0.0.1',
   allowInsecure = false,
-  download = downloadFile,
+  allowedDownloadHosts = [],
+  download = (url, outputPath) => downloadWebhookVideo(url, outputPath, { allowedHosts: allowedDownloadHosts }),
   notify = null,
   onTaskEvent = null
 }) {
@@ -205,7 +202,8 @@ export function createSeedanceWebhookHandler({
       const info = extractTaskInfo(json);
       const taskDir = path.join(outputDir, info.taskId);
       fs.mkdirSync(taskDir, { recursive: true });
-      fs.writeFileSync(path.join(taskDir, 'headers.json'), JSON.stringify(req.headers, null, 2) + '\n');
+      // Never persist authentication material or arbitrary extension headers.
+      fs.writeFileSync(path.join(taskDir, 'headers.json'), JSON.stringify(diagnosticHeaders(req.headers), null, 2) + '\n');
       fs.writeFileSync(path.join(taskDir, 'payload.json'), JSON.stringify(json, null, 2) + '\n');
       fs.writeFileSync(path.join(taskDir, 'payload.raw.json'), raw);
 
@@ -272,6 +270,7 @@ export function createSeedanceWebhookHandler({
         downloadError
       });
     } catch (error) {
+      if (error.message === 'invalid_task_id') return sendBasicJson(res, 400, false, 'invalid_task_id');
       return sendBasicJson(res, 500, false, 'internal_error');
     }
   };
@@ -280,13 +279,18 @@ export function createSeedanceWebhookHandler({
 async function main() {
   const command = process.argv[2];
   if (command !== 'serve') {
-    console.error('Usage: node src/tools/seedance-webhook.js serve --listen http://127.0.0.1:8791 --output-dir <DIR> [--download-dir <DIR>] --secret <SECRET> [--path /seedance-webhook] [--allow-insecure-loopback] [--discord-target <id>] [--env-file <path>] [--task-event-script <path>]');
+    console.error('Usage: node src/tools/seedance-webhook.js serve --listen http://127.0.0.1:8791 --output-dir <DIR> [--download-dir <DIR> --download-hosts <host1,host2>] --secret <SECRET> [--path /seedance-webhook] [--allow-insecure-loopback] [--discord-target <id>] [--env-file <path>] [--task-event-script <path>]');
     process.exit(1);
   }
 
   const listen = new URL(arg('listen', 'http://127.0.0.1:8791'));
   const outputDir = arg('output-dir', path.join(process.cwd(), 'data', 'seedance-webhooks'));
   const downloadDir = arg('download-dir', '');
+  const allowedDownloadHosts = arg('download-hosts', '').split(',').map(value => value.trim().toLowerCase()).filter(Boolean);
+  if (downloadDir && !allowedDownloadHosts.length) {
+    console.error('Downloads require --download-hosts with explicit trusted HTTPS media hostnames.');
+    process.exit(1);
+  }
   const secret = arg('secret', process.env.SEEDANCE_WEBHOOK_SECRET || '');
   const routePath = arg('path', '/seedance-webhook');
   const discordTarget = arg('discord-target', '');
@@ -329,6 +333,7 @@ async function main() {
   const server = http.createServer(createSeedanceWebhookHandler({
     outputDir,
     downloadDir,
+    allowedDownloadHosts,
     secret,
     routePath,
     host,
@@ -358,3 +363,4 @@ async function main() {
 if (import.meta.url === `file://${process.argv[1]}`) {
   await main();
 }
+
