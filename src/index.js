@@ -129,7 +129,7 @@ function registerTools(server) {
 }
 
 function createServer() {
-  const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
+  const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION }, { maxToolInputElements: 10_000 });
   registerTools(server);
   return server;
 }
@@ -143,7 +143,7 @@ async function runHttp() {
   const cfg = getConfig();
   const app = express();
   const allowedOrigin = cfg.mcp.allowedOrigin || `http://${cfg.mcp.host}:${cfg.mcp.port}`;
-  app.use(express.json({ limit: '2mb' }));
+  app.use(express.json({ limit: '2mb', inflate: false }));
   app.use(cors({ origin: allowedOrigin }));
   app.get('/health', (_req, res) => res.json({ ok: true, name: SERVER_NAME, version: SERVER_VERSION }));
   app.post('/mcp', async (req, res) => {
@@ -168,7 +168,9 @@ async function runHttp() {
 
 let cliResult;
 try {
-  cliResult = await runCliCommand(process.argv.slice(2));
+  const argv = process.argv.slice(2);
+  // The MCP executable defaults to stdio; only explicit CLI commands dispatch.
+  cliResult = argv.length ? await runCliCommand(argv) : undefined;
 } catch (error) {
   console.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
   process.exitCode = 1;
@@ -182,3 +184,4 @@ if (cliResult !== undefined) {
   if (transport === 'http') await runHttp();
   else await runStdio();
 }
+
